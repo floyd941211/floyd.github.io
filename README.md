@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>assignment1</title>
+   
   </head>
   <body>
     <h1>Feng-Yi Tseng</h1>
