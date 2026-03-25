@@ -1,17 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-   <p>Code Example:</p>
-    <code>var person = {</code><br>
-    <code>
-        &emsp;firstName:"tseng",
-    </code><br>
-    <code>
-        &emsp;lastName:"fengyi",
-    </code><br>
-    <code>&emsp;113402020</code><br>
-   <code>}</code>
+   <style>
+      p { font-weight: bold; font-size: 24px; padding: 10px; margin: 10px; font-family: serif; }
+      
+      /* 雙線邊框 - 淺藍背景，橘紅雙線 */
+      p.twoLineBorder {
+         background-color: lightblue;
+         border: 5px double tomato;
+      }
+
+      /* 圓角單線邊框 - 黃背景，藍色圓角線 */
+      p.oneLineBorder {
+         background-color: yellow;
+         border: 2px solid dodgerblue;
+         border-radius: 15px;
+      }
+
+      /* 點狀邊框 - 綠背景，灰色點狀線 */
+      p.dottedBorder {
+         background-color: mediumseagreen;
+         border: 5px dotted gray;
+      }
+   </style>
+</head>
+<body>
+
+   <p class="twoLineBorder">Hello World</p>
+   <p class="oneLineBorder">Hello World</p>
+   <p class="dottedBorder">Hello World</p>
+
 </body>
 </html>
-
 
