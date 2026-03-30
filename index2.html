@@ -3,174 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDG 12: 你的選擇，決定地球的樣子</title>
+    <title>24小時碳足跡挑戰</title>
     <style>
-        /* --- 1. CSS 變數設定 (核心控制) --- */
         :root {
-            --bg-color: #f4f4f4;
-            --text-color: #333;
-            --accent-color: #999;
-            --hero-msg: "請選擇你的生活方式";
-            --forest-opacity: 0.5;
-            --trash-opacity: 0.5;
+            /* 初始變數 */
+            --score-width: 30%;
+            --status-color: #ff9800;
+            --final-msg: "請開始你的減碳生活";
+            --earth-filter: grayscale(0.5);
         }
 
-        /* 當選擇「永續路徑」時 */
-        #path-eco:checked ~ * {
-            --bg-color: #e8f5e9;
-            --text-color: #1b5e20;
-            --accent-color: #4caf50;
-            --hero-msg: "感謝你，地球正在復原中";
-            --forest-opacity: 1;
-            --trash-opacity: 0;
+        /* --- 核心邏輯：積分累積控制 --- */
+        /* 這裡模擬：如果選擇了三個低碳選項，分數會變長並轉綠 */
+        #eco-1:checked ~ #eco-2:checked ~ #eco-3:checked ~ .app {
+            --score-width: 100%; --status-color: #4caf50; --final-msg: "超棒！你是地球守護者"; --earth-filter: grayscale(0);
+        }
+        /* 中間狀態 */
+        #eco-1:checked ~ .app, #eco-2:checked ~ .app, #eco-3:checked ~ .app {
+            --score-width: 60%; --status-color: #8bc34a;
+        }
+        /* 負面狀態 */
+        #waste-1:checked ~ .app, #waste-2:checked ~ .app, #waste-3:checked ~ .app {
+            --score-width: 20%; --status-color: #f44336; --final-msg: "警報！碳排放過高"; --earth-filter: sepia(1);
         }
 
-        /* 當選擇「消耗路徑」時 */
-        #path-waste:checked ~ * {
-            --bg-color: #3e2723;
-            --text-color: #d7ccc8;
-            --accent-color: #ff5722;
-            --hero-msg: "警報：資源正在耗盡";
-            --forest-opacity: 0;
-            --trash-opacity: 1;
+        /* --- 基礎樣式 --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: 0.6s; font-family: sans-serif; }
+        body { background: #fdfdfd; color: #333; }
+        input { display: none; }
+
+        .app { min-height: 100vh; padding: 40px 20px; text-align: center; }
+
+        /* 固定在頂部的得分板 */
+        .scoreboard {
+            position: fixed; top: 0; left: 0; width: 100%; 
+            background: white; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 100;
         }
-
-        /* --- 2. 基礎樣式 --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+        .progress-bar {
+            width: 80%; max-width: 600px; height: 15px; background: #eee; 
+            margin: 10px auto; border-radius: 10px; overflow: hidden;
         }
+        .fill { width: var(--score-width); height: 100%; background: var(--status-color); }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            overflow-x: hidden;
+        /* 題目區塊 */
+        .step { max-width: 700px; margin: 100px auto; padding: 30px; border-radius: 20px; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        h2 { margin-bottom: 20px; color: #555; }
+        
+        .options { display: flex; gap: 15px; justify-content: center; }
+        .card { 
+            padding: 20px; border: 2px solid #eee; border-radius: 12px; cursor: pointer; flex: 1;
+            transition: 0.3s;
         }
+        .card:hover { border-color: var(--status-color); background: #fafafa; }
 
-        input[type="radio"] { display: none; } /* 隱藏控制項 */
+        /* 選中後的視覺回饋 */
+        #eco-1:checked ~ .app label[for="eco-1"], 
+        #eco-2:checked ~ .app label[for="eco-2"],
+        #eco-3:checked ~ .app label[for="eco-3"] { background: #e8f5e9; border-color: #4caf50; }
 
-        /* --- 3. 佈局設計 --- */
-        .container {
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 50px;
-        }
+        #waste-1:checked ~ .app label[for="waste-1"],
+        #waste-2:checked ~ .app label[for="waste-2"],
+        #waste-3:checked ~ .app label[for="waste-3"] { background: #ffebee; border-color: #f44336; }
 
-        /* 標題與視覺回饋 */
-        h1 { font-size: 3rem; margin-bottom: 20px; }
-        .status-msg { font-size: 1.5rem; margin-bottom: 40px; font-weight: bold; }
-
-        /* 決策按鈕區區塊 */
-        .choice-box {
-            display: flex;
-            gap: 30px;
-            z-index: 10;
-        }
-
-        .btn {
-            padding: 20px 40px;
-            border: 3px solid var(--accent-color);
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 1.2rem;
-            font-weight: bold;
-            background: white;
-            color: #333;
-        }
-
-        .btn:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        /* 背景視覺特效 */
-        .visual-effect {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            font-size: 10rem;
-            pointer-events: none;
-        }
-
-        .forest { opacity: var(--forest-opacity); filter: grayscale(0.2); }
-        .trash { opacity: var(--trash-opacity); filter: sepia(1); }
-
-        /* 內容卡片 */
-        .info-section {
-            margin-top: 100px;
-            max-width: 800px;
-            line-height: 1.8;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
-        }
-
-        /* 動態進度條 */
-        .carbon-meter {
-            width: 100%;
-            height: 10px;
-            background: #ddd;
-            margin-top: 20px;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        .carbon-fill {
-            height: 100%;
-            background: var(--accent-color);
-            width: 50%; /* 預設 */
-        }
-        #path-eco:checked ~ .container .carbon-fill { width: 10%; background: #4caf50; }
-        #path-waste:checked ~ .container .carbon-fill { width: 95%; background: #ff5722; }
-
+        /* 結尾視覺 */
+        .earth-result { font-size: 5rem; margin-top: 50px; filter: var(--earth-filter); }
+        .msg { font-size: 1.5rem; font-weight: bold; margin-top: 20px; color: var(--status-color); }
     </style>
 </head>
 <body>
 
-    <!-- 核心控制項 (隱藏) -->
-    <input type="radio" name="decision" id="path-eco">
-    <input type="radio" name="decision" id="path-waste">
+    <!-- 控制開關 -->
+    <input type="radio" name="q1" id="eco-1"> <input type="radio" name="q1" id="waste-1">
+    <input type="radio" name="q2" id="eco-2"> <input type="radio" name="q2" id="waste-2">
+    <input type="radio" name="q3" id="eco-3"> <input type="radio" name="q3" id="waste-3">
 
-    <!-- 背景元素 -->
-    <div class="visual-effect">
-        <div class="forest">🌳</div>
-        <div class="trash">⚠️</div>
-    </div>
-
-    <!-- 主要內容區 -->
-    <div class="container">
-        <h1>物命：你的選擇</h1>
-        <p class="status-msg">內容標語：<span id="dynamic-text">按下方按鈕決定地球命運</span></p>
-
-        <div class="choice-box">
-            <label for="path-eco" class="btn">🌱 我選擇：永續循環</label>
-            <label for="path-waste" class="btn">🍔 我選擇：便利消耗</label>
+    <div class="app">
+        <div class="scoreboard">
+            <p>🌍 你的地球健康分數</p>
+            <div class="progress-bar"><div class="fill"></div></div>
         </div>
 
-        <div class="info-section">
-            <h2>當前環境預測</h2>
-            <p>
-                如果你選擇了永續生活，每年我們將減少超過 2000 公升的水資源浪費。
-                反之，若追求極致便利，海洋中的塑膠微粒將在 2050 年超過魚類總量。
-            </p>
-            <div class="carbon-meter">
-                <div class="carbon-fill"></div>
+        <!-- 階段 1 -->
+        <section class="step">
+            <h2>早上：如何前往學校/公司？</h2>
+            <div class="options">
+                <label for="eco-1" class="card">🚲 騎腳踏車 / 走路<br>(低碳排放)</label>
+                <label for="waste-1" class="card">🚗 獨自開車<br>(高碳排放)</label>
             </div>
-            <p style="font-size: 0.8rem; margin-top: 10px;">系統估算之環境壓力指數</p>
+        </section>
+
+        <!-- 階段 2 -->
+        <section class="step">
+            <h2>中午：想吃點什麼？</h2>
+            <div class="options">
+                <label for="eco-2" class="card">🥗 當季在地素食<br>(減少運輸碳排)</label>
+                <label for="waste-2" class="card">🥩 進口牛肉漢堡<br>(高畜牧碳排)</label>
+            </div>
+        </section>
+
+        <!-- 階段 3 -->
+        <section class="step">
+            <h2>晚上：休息時的習慣？</h2>
+            <div class="options">
+                <label for="eco-3" class="card">📖 閱讀紙本書籍<br>(節省電力)</label>
+                <label for="waste-3" class="card">🎮 長時間遊玩高階電玩<br>(高耗能)</label>
+            </div>
+        </section>
+
+        <!-- 結局展示 -->
+        <div class="result-area">
+            <div class="earth-result">🌍</div>
+            <div class="msg">
+                <!-- 這裡可以透過 CSS content 注入文字，或是直接用簡單顯示 -->
+                最後結果：您的選擇決定了明天的樣貌
+            </div>
         </div>
     </div>
 
