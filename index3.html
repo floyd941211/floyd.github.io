@@ -1,12 +1,253 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24H 碳足跡抉擇者 - 期中提案</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* 1. THE SETUP */
+        * { box-sizing: border-box; }
+        body {
+            background-color: #050505;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Slide Container Setup */
+        .slide-container {
+            align-items: flex-start;
+            background-color: #050505;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Urbanist', "PingFang TC", "Microsoft JhengHei", sans-serif;
+            height: 100vh;
+            justify-content: center;
+            overflow: hidden;
+            padding: 60px 100px;
+            position: relative;
+            width: 100vw;
+            scroll-snap-align: start;
+        }
+
+        .slides-wrapper {
+            height: 100vh;
+            overflow-y: auto;
+            scroll-snap-type: y mandatory;
+        }
+
+        /* Accent Line */
+        .slide-container::after {
+            background: rgba(222, 255, 154, 0.2);
+            bottom: 50px;
+            content: '';
+            height: 1px;
+            left: 100px;
+            position: absolute;
+            right: 100px;
+        }
+        .slide-container.bleed-image-layout::after { display: none; }
+
+        /* 2. CONSISTENT TYPOGRAPHY */
+        .slide-container h1, .slide-container h2, .slide-container h3, .slide-container h4 {
+            color: #f5f5f5; font-weight: 500; margin: 0;
+        }
+
+        .slide-container h1 span, .slide-container h2 span, .slide-container h3 span, .highlight-text {
+            color: #deff9a;
+        }
+
+        .slide-container p, .slide-container .subtitle, .slide-container li, .slide-container cite {
+            color: #daffde; font-weight: 400; line-height: 1.6; margin: 0;
+        }
+
+        /* Font Sizes */
+        .slide-container h1 { font-size: 80px; line-height: 1.1; margin-bottom: 20px; }
+        .slide-container .slide-title { font-size: 50px; line-height: 1.2; margin-bottom: 40px; text-align: left; width: 100%; border-left: 10px solid #deff9a; padding-left: 25px;}
+        .slide-container h3 { font-size: 36px; margin-bottom: 20px; }
+        .slide-container p, .slide-container li { font-size: 24px; }
+        .slide-container .subtitle { font-size: 28px; margin-top: 20px; color: #a0c2a3; }
+
+        .slide-container .content-area {
+            align-items: center; display: flex; flex-direction: column;
+            flex-grow: 1; justify-content: center; width: 100%;
+        }
+
+        /* 3. LAYOUT DEFINITIONS */
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; width: 100%; align-items: flex-start; }
+        .two-column ul { list-style: none; margin: 0; padding: 0; }
+        .two-column li { margin-bottom: 30px; padding-left: 40px; position: relative; }
+        .two-column li::before { color: #deff9a; content: '•'; font-size: 50px; left: 0; position: absolute; top: -18px; }
+
+        .image-wrapper { border-radius: 20px; height: 450px; overflow: hidden; width: 100%; border: 1px solid rgba(222, 255, 154, 0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .image-wrapper img { height: 100%; object-fit: cover; width: 100%; }
+
+        .tiled-content { align-items: stretch; display: flex; gap: 40px; justify-content: center; width: 100%; }
+        .tile {
+            background-color: #111; border-radius: 20px; border: 1px solid #222;
+            display: flex; flex-direction: column; flex: 1; padding: 50px 40px; transition: 0.3s;
+        }
+        .tile:hover { transform: translateY(-10px); border-color: #deff9a; }
+        .tile h3 { color: #deff9a; font-size: 30px; border-bottom: 1px solid #333; padding-bottom: 20px; margin-bottom: 25px;}
+
+        /* Bleed Image Right */
+        .slide-container.bleed-image-layout { align-items: start; display: grid; gap: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0; }
+        .slide-container.bleed-image-layout > .content-container { padding: 0 80px; display: flex; flex-direction: column; justify-content: center; height: 100%; }
+        .slide-container.bleed-image-layout > .image-container { height: 100%; overflow: hidden; width: 100%; }
+        .slide-container.bleed-image-layout img.bleed-image-side { border-radius: 0; display: block; height: 100vh; object-fit: cover; width: 100%; }
+
+        /* Bullet Points List */
+        .bullet-list { max-width: 1100px; width: 100%; }
+        .bullet-list ul { list-style: none; margin: 0; padding: 0; }
+        .bullet-list li { margin-bottom: 30px; padding-left: 80px; position: relative; font-size: 26px; background: #0f0f0f; padding: 30px 30px 30px 100px; border-radius: 15px; border: 1px solid #222;}
+        .bullet-list i { color: #deff9a; font-size: 40px; left: 35px; position: absolute; top: 35px; }
+        .bullet-list li strong { color: #f5f5f5; font-weight: 700; font-size: 30px; display: block; margin-bottom: 12px; }
+
+        .link-highlight { color: #deff9a; word-break: break-all; font-size: 22px; display: block; margin-top: 15px; background: rgba(222, 255, 154, 0.1); padding: 10px; border-radius: 8px;}
+
+        /* Navigation Hint */
+        .nav-hint { position: fixed; bottom: 20px; right: 20px; color: #444; font-size: 14px; z-index: 100; font-family: sans-serif;}
+    </style>
+</head>
 <body>
 
-  <svg width="200" height="200">
-    <rect x="20" y="20" width="100" height="100" fill="blue" stroke="black" stroke-width="3" />
-    
-    <circle cx="100" cy="80" r="50" fill="yellow" stroke="red" stroke-width="3" />
-  </svg>
+    <div class="nav-hint">使用滾輪或滑動翻頁</div>
+
+    <div class="slides-wrapper">
+
+        <!-- 頁面 1: 標題頁 -->
+        <div class="slide-container bleed-image-layout" id="slide1">
+            <div class="content-container">
+                <p class="subtitle" style="font-size: 32px; margin-bottom: 20px; color: #deff9a;"><i class="fa-solid fa-leaf"></i> SDG 12 責任消費與生產</p>
+                <h1 style="font-size: 75px;">24H <span>碳足跡</span>抉擇者</h1>
+                <p class="subtitle">讓隱形的負擔變為可見的抉擇</p>
+                <p style="margin-top: 50px; color: #666;">期中專案提案報告</p>
+            </div>
+            <div class="image-container">
+                <img class="bleed-image-side" src="https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?q=80&w=1974&auto=format&fit=crop" alt="[自然環境與抉擇的對比圖]">
+            </div>
+        </div>
+
+        <!-- 頁面 2: 主題介紹 -->
+        <div class="slide-container" id="slide2">
+            <h2 class="slide-title">主題介紹與<span>核心概念</span></h2>
+            <div class="content-area">
+                <div class="two-column">
+                    <div>
+                        <ul>
+                            <li><strong>SDG 12 責任消費與生產：</strong><br>專注於減少浪費與永續生活方式。</li>
+                            <li><strong>專案理念：</strong><br>將抽象的碳排放數據轉化為具體的「24 小時生活模擬器」。</li>
+                            <li><strong>抉擇引導反思：</strong><br>使用者透過交通、飲食、節能的抉擇，親身體會<span class="highlight-text">「行為與環境代價」</span>的直接關聯。</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2026&auto=format&fit=crop" alt="[永續發展與環境負擔示意圖]">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 頁面 3: 版面設計 -->
+        <div class="slide-container" id="slide3">
+            <h2 class="slide-title">網頁版面與<span>設計理念</span></h2>
+            <div class="content-area">
+                <div class="tiled-content">
+                    <div class="tile">
+                        <h3>1. 實時儀表板</h3>
+                        <p>固定於頂部 (Fixed Header)，即刻反映數據變化，讓碳排重量隨抉擇「沈重感」遞增。</p>
+                    </div>
+                    <div class="tile">
+                        <h3>2. 沉浸式卡片流</h3>
+                        <p>單頁向下滾動 (One-page scroll)，以極簡二選一互動，降低理解門檻，強化決策壓力。</p>
+                    </div>
+                    <div class="tile">
+                        <h3>3. 行動報告書</h3>
+                        <p>根據最終碳足跡結果，生成專屬的「環境遺產」報告與實際改善建議。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 頁面 4: 特效展示 -->
+        <div class="slide-container bleed-image-layout" id="slide4">
+            <div class="content-container">
+                <h2 class="slide-title">特效與<span>互動展示</span></h2>
+                <div class="content-area" style="align-items: flex-start;">
+                    <div class="bleed-text-side">
+                        <p style="margin-bottom: 30px;"><strong class="highlight-text"><i class="fa-solid fa-eye-dropper"></i> 視覺化負擔：環境濾鏡</strong><br>
+                        CSS 動態濾鏡：當選擇高碳排，畫面會隨之變灰、變模糊，模擬環境惡化。</p>
+                        
+                        <p><strong class="highlight-text"><i class="fa-solid fa-users"></i> 互動功能：群體放大鏡</strong><br>
+                        JS 即時試算：一鍵模擬「全台 2,300 萬人」同步選擇時的巨大環境震撼。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="image-container">
+                <img class="bleed-image-side" src="https://images.unsplash.com/photo-1611273426858-450d8ce3cbde?q=80&w=2070&auto=format&fit=crop" style="filter: grayscale(85%) blur(1.5px);" alt="[霧霾城市背景展示濾鏡效果]">
+            </div>
+        </div>
+
+        <!-- 頁面 5: 資料來源 (關鍵) -->
+        <div class="slide-container" id="slide5">
+            <h2 class="slide-title">資料與<span>素材來源</span></h2>
+            <div class="content-area">
+                <div class="bullet-list">
+                    <ul>
+                        <li>
+                            <i class="fa-solid fa-database"></i> 
+                            <strong>核心運算數據：環境部碳足跡資訊網</strong>
+                            計算公式與各行為碳排放權重，皆嚴謹參照「行政院環境部」公開資料，具備科學依據。
+                            <span class="link-highlight">🔗 https://cfp.moenv.gov.tw/WebPage/Index.aspx</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-image"></i> 
+                            <strong>視覺素材：Unsplash & FontAwesome</strong>
+                            使用免版稅高畫質影像營造沉浸感，並配合向量圖示打造輕量化網頁體驗。
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 頁面 6: 創意亮點 -->
+        <div class="slide-container" id="slide6">
+            <h2 class="slide-title">專案亮點與<span>創意</span></h2>
+            <div class="content-area">
+                <div class="two-column">
+                    <div>
+                        <ul>
+                            <li><strong>情緒化介面：</strong><br>不只是看數字，而是讓網頁與地球一起「生病」，觸發視覺與心理共鳴。</li>
+                            <li><strong>微觀到宏觀：</strong><br>透過群體乘數效應，消弭「個人行為微不足道」的迷思。</li>
+                            <li><strong>低碳開發實踐：</strong><br>純原生代碼開發，減少載入能耗，將永續精神融入代碼。</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?q=80&w=1974&auto=format&fit=crop" alt="[燈泡與綠色植物結合的創意示意圖]">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 頁面 7: 結語 -->
+        <div class="slide-container" id="slide7" style="text-align: center; align-items: center;">
+            <div class="qa-layout">
+                <h2 style="font-size: 100px; margin-bottom: 20px;">謝謝<span>聆聽</span></h2>
+                <p style="font-size: 32px; color: #a0c2a3;">讓數據不再冷冰冰，而是指尖上的責任。</p>
+                <div style="margin-top: 80px; border-top: 1px solid #333; padding-top: 40px; display: inline-block;">
+                    <p style="font-size: 20px; color: #666; letter-spacing: 5px;">SDG 12 | 24H 碳足跡抉擇者</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
 </body>
 </html>
