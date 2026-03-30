@@ -1,59 +1,178 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-    <meta charset="utf-8">
-    <title>Exercise</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDG 12: 你的選擇，決定地球的樣子</title>
     <style>
-        body {
-            background-color: #eeeeee;
-            padding: 40px;
-            font-family: "Times New Roman", serif;
+        /* --- 1. CSS 變數設定 (核心控制) --- */
+        :root {
+            --bg-color: #f4f4f4;
+            --text-color: #333;
+            --accent-color: #999;
+            --hero-msg: "請選擇你的生活方式";
+            --forest-opacity: 0.5;
+            --trash-opacity: 0.5;
         }
 
-        /* Heading 1 */
-        h1 {
-            text-shadow: 
-                2px 2px 0px red,
-                4px 4px 0px pink;
-            border-top: 5px solid black;
-            display: inline-block;
-            padding-top: 10px;
+        /* 當選擇「永續路徑」時 */
+        #path-eco:checked ~ * {
+            --bg-color: #e8f5e9;
+            --text-color: #1b5e20;
+            --accent-color: #4caf50;
+            --hero-msg: "感謝你，地球正在復原中";
+            --forest-opacity: 1;
+            --trash-opacity: 0;
         }
 
-        /* Heading 2 */
-        .box {
-            border: 3px solid black;
-            outline: 4px solid yellow;
-            padding: 10px;
-            width: 600px;
-            margin-top: 30px;
+        /* 當選擇「消耗路徑」時 */
+        #path-waste:checked ~ * {
+            --bg-color: #3e2723;
+            --text-color: #d7ccc8;
+            --accent-color: #ff5722;
+            --hero-msg: "警報：資源正在耗盡";
+            --forest-opacity: 0;
+            --trash-opacity: 1;
         }
 
-        h2 {
-            font-style: italic;
+        /* --- 2. 基礎樣式 --- */
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
         }
 
-        /* Heading 3 */
-        h3 {
-            text-align: right;
-            text-decoration: underline;
-            margin-top: 50px;
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
         }
+
+        input[type="radio"] { display: none; } /* 隱藏控制項 */
+
+        /* --- 3. 佈局設計 --- */
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 50px;
+        }
+
+        /* 標題與視覺回饋 */
+        h1 { font-size: 3rem; margin-bottom: 20px; }
+        .status-msg { font-size: 1.5rem; margin-bottom: 40px; font-weight: bold; }
+
+        /* 決策按鈕區區塊 */
+        .choice-box {
+            display: flex;
+            gap: 30px;
+            z-index: 10;
+        }
+
+        .btn {
+            padding: 20px 40px;
+            border: 3px solid var(--accent-color);
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: white;
+            color: #333;
+        }
+
+        .btn:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* 背景視覺特效 */
+        .visual-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 10rem;
+            pointer-events: none;
+        }
+
+        .forest { opacity: var(--forest-opacity); filter: grayscale(0.2); }
+        .trash { opacity: var(--trash-opacity); filter: sepia(1); }
+
+        /* 內容卡片 */
+        .info-section {
+            margin-top: 100px;
+            max-width: 800px;
+            line-height: 1.8;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 動態進度條 */
+        .carbon-meter {
+            width: 100%;
+            height: 10px;
+            background: #ddd;
+            margin-top: 20px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .carbon-fill {
+            height: 100%;
+            background: var(--accent-color);
+            width: 50%; /* 預設 */
+        }
+        #path-eco:checked ~ .container .carbon-fill { width: 10%; background: #4caf50; }
+        #path-waste:checked ~ .container .carbon-fill { width: 95%; background: #ff5722; }
+
     </style>
 </head>
-
 <body>
 
-    <h1>This is heading 1</h1>
+    <!-- 核心控制項 (隱藏) -->
+    <input type="radio" name="decision" id="path-eco">
+    <input type="radio" name="decision" id="path-waste">
 
-    <div class="box">
-        <h2>This is heading 2</h2>
+    <!-- 背景元素 -->
+    <div class="visual-effect">
+        <div class="forest">🌳</div>
+        <div class="trash">⚠️</div>
     </div>
 
-    <h3>This is heading 3</h3>
+    <!-- 主要內容區 -->
+    <div class="container">
+        <h1>物命：你的選擇</h1>
+        <p class="status-msg">內容標語：<span id="dynamic-text">按下方按鈕決定地球命運</span></p>
+
+        <div class="choice-box">
+            <label for="path-eco" class="btn">🌱 我選擇：永續循環</label>
+            <label for="path-waste" class="btn">🍔 我選擇：便利消耗</label>
+        </div>
+
+        <div class="info-section">
+            <h2>當前環境預測</h2>
+            <p>
+                如果你選擇了永續生活，每年我們將減少超過 2000 公升的水資源浪費。
+                反之，若追求極致便利，海洋中的塑膠微粒將在 2050 年超過魚類總量。
+            </p>
+            <div class="carbon-meter">
+                <div class="carbon-fill"></div>
+            </div>
+            <p style="font-size: 0.8rem; margin-top: 10px;">系統估算之環境壓力指數</p>
+        </div>
+    </div>
 
 </body>
 </html>
-
