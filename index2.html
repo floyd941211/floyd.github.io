@@ -3,122 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>24小時碳足跡挑戰</title>
+    <title>Carbon Life: 24H 碳足跡模擬器</title>
     <style>
         :root {
-            /* 初始變數 */
-            --score-width: 30%;
-            --status-color: #ff9800;
-            --final-msg: "請開始你的減碳生活";
-            --earth-filter: grayscale(0.5);
+            --earth-color: #4caf50;
+            --bg-overlay: rgba(0,0,0,0);
         }
 
-        /* --- 核心邏輯：積分累積控制 --- */
-        /* 這裡模擬：如果選擇了三個低碳選項，分數會變長並轉綠 */
-        #eco-1:checked ~ #eco-2:checked ~ #eco-3:checked ~ .app {
-            --score-width: 100%; --status-color: #4caf50; --final-msg: "超棒！你是地球守護者"; --earth-filter: grayscale(0);
-        }
-        /* 中間狀態 */
-        #eco-1:checked ~ .app, #eco-2:checked ~ .app, #eco-3:checked ~ .app {
-            --score-width: 60%; --status-color: #8bc34a;
-        }
-        /* 負面狀態 */
-        #waste-1:checked ~ .app, #waste-2:checked ~ .app, #waste-3:checked ~ .app {
-            --score-width: 20%; --status-color: #f44336; --final-msg: "警報！碳排放過高"; --earth-filter: sepia(1);
+        body {
+            margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5; color: #333; transition: background 0.5s;
         }
 
-        /* --- 基礎樣式 --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; transition: 0.6s; font-family: sans-serif; }
-        body { background: #fdfdfd; color: #333; }
-        input { display: none; }
-
-        .app { min-height: 100vh; padding: 40px 20px; text-align: center; }
-
-        /* 固定在頂部的得分板 */
-        .scoreboard {
-            position: fixed; top: 0; left: 0; width: 100%; 
-            background: white; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 100;
+        /* 頂部固定儀表板 */
+        .dashboard {
+            position: fixed; top: 0; width: 100%; background: white;
+            padding: 20px; box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            display: flex; justify-content: space-around; z-index: 100;
         }
-        .progress-bar {
-            width: 80%; max-width: 600px; height: 15px; background: #eee; 
-            margin: 10px auto; border-radius: 10px; overflow: hidden;
+
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: var(--earth-color); }
+
+        /* 核心地球視覺 */
+        .earth-container {
+            margin-top: 120px; text-align: center; position: relative;
         }
-        .fill { width: var(--score-width); height: 100%; background: var(--status-color); }
+        #earth-emoji {
+            font-size: 8rem; display: inline-block; transition: transform 0.3s;
+        }
 
         /* 題目區塊 */
-        .step { max-width: 700px; margin: 100px auto; padding: 30px; border-radius: 20px; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        h2 { margin-bottom: 20px; color: #555; }
-        
-        .options { display: flex; gap: 15px; justify-content: center; }
-        .card { 
-            padding: 20px; border: 2px solid #eee; border-radius: 12px; cursor: pointer; flex: 1;
-            transition: 0.3s;
+        .scrolling-content { padding: 20px; max-width: 800px; margin: 0 auto; }
+        .question-card {
+            background: white; border-radius: 20px; padding: 30px;
+            margin-bottom: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transform: translateY(20px); opacity: 0; transition: 0.6s;
         }
-        .card:hover { border-color: var(--status-color); background: #fafafa; }
+        .question-card.active { transform: translateY(0); opacity: 1; }
 
-        /* 選中後的視覺回饋 */
-        #eco-1:checked ~ .app label[for="eco-1"], 
-        #eco-2:checked ~ .app label[for="eco-2"],
-        #eco-3:checked ~ .app label[for="eco-3"] { background: #e8f5e9; border-color: #4caf50; }
+        .btn-group { display: flex; gap: 15px; margin-top: 20px; }
+        button {
+            flex: 1; padding: 15px; border: none; border-radius: 10px;
+            cursor: pointer; font-size: 1rem; font-weight: 600;
+            transition: 0.2s; background: #e4e6eb;
+        }
+        button:hover { background: #d8dadf; }
+        button.selected { background: var(--earth-color); color: white; }
 
-        #waste-1:checked ~ .app label[for="waste-1"],
-        #waste-2:checked ~ .app label[for="waste-2"],
-        #waste-3:checked ~ .app label[for="waste-3"] { background: #ffebee; border-color: #f44336; }
-
-        /* 結尾視覺 */
-        .earth-result { font-size: 5rem; margin-top: 50px; filter: var(--earth-filter); }
-        .msg { font-size: 1.5rem; font-weight: bold; margin-top: 20px; color: var(--status-color); }
+        /* 結局遮罩 */
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-overlay); pointer-events: none; z-index: 50;
+        }
     </style>
 </head>
 <body>
 
-    <!-- 控制開關 -->
-    <input type="radio" name="q1" id="eco-1"> <input type="radio" name="q1" id="waste-1">
-    <input type="radio" name="q2" id="eco-2"> <input type="radio" name="q2" id="waste-2">
-    <input type="radio" name="q3" id="eco-3"> <input type="radio" name="q3" id="waste-3">
+    <div id="overlay"></div>
 
-    <div class="app">
-        <div class="scoreboard">
-            <p>🌍 你的地球健康分數</p>
-            <div class="progress-bar"><div class="fill"></div></div>
+    <div class="dashboard">
+        <div class="stat-item">
+            <div>累積排放量</div>
+            <div id="total-carbon" class="stat-value">0.00</div>
+            <small>kg CO2e</small>
         </div>
-
-        <!-- 階段 1 -->
-        <section class="step">
-            <h2>早上：如何前往學校/公司？</h2>
-            <div class="options">
-                <label for="eco-1" class="card">🚲 騎腳踏車 / 走路<br>(低碳排放)</label>
-                <label for="waste-1" class="card">🚗 獨自開車<br>(高碳排放)</label>
-            </div>
-        </section>
-
-        <!-- 階段 2 -->
-        <section class="step">
-            <h2>中午：想吃點什麼？</h2>
-            <div class="options">
-                <label for="eco-2" class="card">🥗 當季在地素食<br>(減少運輸碳排)</label>
-                <label for="waste-2" class="card">🥩 進口牛肉漢堡<br>(高畜牧碳排)</label>
-            </div>
-        </section>
-
-        <!-- 階段 3 -->
-        <section class="step">
-            <h2>晚上：休息時的習慣？</h2>
-            <div class="options">
-                <label for="eco-3" class="card">📖 閱讀紙本書籍<br>(節省電力)</label>
-                <label for="waste-3" class="card">🎮 長時間遊玩高階電玩<br>(高耗能)</label>
-            </div>
-        </section>
-
-        <!-- 結局展示 -->
-        <div class="result-area">
-            <div class="earth-result">🌍</div>
-            <div class="msg">
-                <!-- 這裡可以透過 CSS content 注入文字，或是直接用簡單顯示 -->
-                最後結果：您的選擇決定了明天的樣貌
-            </div>
+        <div class="stat-item">
+            <div>環境壓力值</div>
+            <div id="stress-level" class="stat-value">0%</div>
         </div>
     </div>
 
+    <div class="earth-container">
+        <div id="earth-emoji">🌍</div>
+    </div>
+
+    <div class="scrolling-content">
+        <!-- 題目 1 -->
+        <div class="question-card active" id="q1">
+            <h3>早晨：你的交通工具？</h3>
+            <p>不同的代步方式決定了你一天的碳排起點。</p>
+            <div class="btn-group">
+                <button onclick="selectOption(1, 0.05, '🚲', this)">腳踏車 / 步行</button>
+                <button onclick="selectOption(1, 1.20, '🚗', this)">獨自開車 (燃油車)</button>
+            </div>
+        </div>
+
+        <!-- 題目 2 -->
+        <div class="question-card active" id="q2">
+            <h3>午餐：飲食選擇？</h3>
+            <p>肉類生產（尤其是牛肉）是碳排的主要來源。</p>
+            <div class="btn-group">
+                <button onclick="selectOption(2, 0.40, '🥗', this)">在地蔬食</button>
+                <button onclick="selectOption(2, 2.50, '🥩', this)">進口牛排</button>
+            </div>
+        </div>
+
+        <!-- 題目 3 -->
+        <div class="question-card active" id="q3">
+            <h3>夏季：空調使用習慣？</h3>
+            <p>冷氣溫度的設定對電力消耗影響極大。</p>
+            <div class="btn-group">
+                <button onclick="selectOption(3, 0.20, '🍃', this)">26度 + 電風扇</button>
+                <button onclick="selectOption(3, 1.80, '❄️', this)">18度 強力運轉</button>
+            </div>
+        </div>
+
+        <div id="final-result" style="text-align: center; padding: 50px; display: none;">
+            <h2 id="result-title">測驗完成</h2>
+            <p id="result-desc"></p>
+            <button onclick="location.reload()" style="margin-top: 20px; background: #333; color: white;">重新模擬</button>
+        </div>
+    </div>
+
+    <script>
+        let scores = { 1: 0, 2: 0, 3: 0 };
+        let totalCarbon = 0;
+
+        function selectOption(qId, value, emoji, btn) {
+            // 更新得分
+            scores[qId] = value;
+            
+            // UI 視覺回饋：處理按鈕樣式
+            const parent = btn.parentElement;
+            parent.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+
+            updateCalculations();
+        }
+
+        function updateCalculations() {
+            totalCarbon = Object.values(scores).reduce((a, b) => a + b, 0);
+            
+            // 更新數字
+            document.getElementById('total-carbon').innerText = totalCarbon.toFixed(2);
+            
+            // 計算壓力百分比 (假設 5kg 是極限)
+            let stress = Math.min((totalCarbon / 5) * 100, 100);
+            document.getElementById('stress-level').innerText = Math.floor(stress) + "%";
+
+            // 改變地球顏色與狀態
+            const earth = document.getElementById('earth-emoji');
+            if (stress > 70) {
+                earth.innerText = "🌋";
+                document.documentElement.style.setProperty('--earth-color', '#ff5252');
+                document.documentElement.style.setProperty('--bg-overlay', 'rgba(255,0,0,0.1)');
+                earth.style.transform = `scale(${1 + stress/200}) rotate(5deg)`;
+            } else if (stress > 30) {
+                earth.innerText = "🌍";
+                document.documentElement.style.setProperty('--earth-color', '#ff9800');
+                document.documentElement.style.setProperty('--bg-overlay', 'rgba(0,0,0,0)');
+                earth.style.transform = `scale(1.1)`;
+            } else {
+                earth.innerText = "🍀";
+                document.documentElement.style.setProperty('--earth-color', '#4caf50');
+                earth.style.transform = `scale(1)`;
+            }
+
+            // 檢查是否完成所有題目以顯示結果
+            if (scores[1] > 0 && scores[2] > 0 && scores[3] > 0) {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            const resDiv = document.getElementById('final-result');
+            const desc = document.getElementById('result-desc');
+            resDiv.style.display = 'block';
+
+            if (totalCarbon < 1.5) {
+                desc.innerText = "你是低碳楷模！你的生活方式與巴黎氣候協定目標一致。";
+            } else if (totalCarbon < 3.5) {
+                desc.innerText = "你的排碳量處於平均水準，仍有改善空間。";
+            } else {
+                desc.innerText = "警報！你的生活方式對地球造成極大壓力，建議從飲食與交通開始減碳。";
+            }
+            resDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>
