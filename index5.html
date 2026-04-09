@@ -7,7 +7,7 @@
     }
 
     th {
-      background-color: white;
+      background-color: #d3d3d3; /* 灰色背景 */
       border: 1px solid black;
       padding: 8px;
     }
@@ -17,11 +17,11 @@
       padding: 8px;
     }
 
-    tr:nth-child(odd) {
+    tbody tr:nth-child(odd) {
       background-color: yellow;
     }
 
-    tr:nth-child(even) {
+    tbody tr:nth-child(even) {
       background-color: white;
     }
 
@@ -39,22 +39,26 @@
 <body>
 
   <table>
-    <tr>
-      <th>Firstname</th>
-      <th>Lastname</th>
-    </tr>
-    <tr>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>3</td>
-    </tr>
+    <thead>
+      <tr>
+        <th>Firstname</th>
+        <th>Lastname</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>2</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>3</td>
+      </tr>
+    </tbody>
   </table>
 
   <div id="fixed-div">
