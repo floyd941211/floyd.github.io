@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>Design Spec Button</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+        /* 延用你提供的設計規範 */
+        .info-button {
+            height: 22px;
+            border-radius: 8px;
+            padding: 0 18px;
+            background-color: #ffffff;
+            border: 1px solid #2f2f2f;
+            font-family: 'Roboto', sans-serif;
+            font-size: 13px;
+            color: #2f2f2f;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .info-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* 點擊時的視覺回饋 */
+        .info-button:active {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="toggleBtn" class="info-button" onclick="handleToggle()">查看資訊</button>
+
+    <script>
+        function handleToggle() {
+            // 1. 抓到按鈕這個元素
+            const btn = document.getElementById('toggleBtn');
+            
+            // 2. 判斷目前的文字內容
+            if (btn.innerText === "查看資訊") {
+                // 如果是查看資訊，就換成收起
+                btn.innerText = "收起資訊";
+                console.log("狀態：已展開");
+            } else {
+                // 否則就換回查看資訊
+                btn.innerText = "查看資訊";
+                console.log("狀態：已收起");
+            }
+        }
+    </script>
+
+</body>
+</html>
