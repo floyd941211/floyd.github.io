@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>響應式佈局練習</title>
+    <style>
+        body {
+            background-color: #5eb5f7; /* 對應圖中的藍色背景 */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 主容器 */
+        .container {
+            background-color: white;
+            width: 90%;
+            max-width: 600px;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* 綠色頂部區塊 */
+        .header {
+            background-color: #a7d149;
+            height: 120px;
+            border-radius: 5px;
+        }
+
+		/* 中間藍色區塊容器 */
+        .content-wrapper {
+            display: flex;
+            gap: 10px;
+            flex-direction: row; /* (b) 狀態：橫向排列 */
+        }
+
+        .blue-box {
+            background-color: #00bcd4;
+            flex: 1;           /* 關鍵：在大螢幕時平均分配剩餘寬度 */
+            height: 100px;     /* 固定高度 */
+            border-radius: 5px;
+        }
+
+        /* --- 響應式設定 --- */
+        @media (max-width: 480px) {
+            .content-wrapper {
+                flex-direction: column; /* (a) 狀態：變為縱向排列 */
+            }
+
+            .blue-box {
+                /* 在小螢幕時，寬度會自動撐滿 100%，高度維持 100px */
+                flex: none; 
+                width: 100%;
+            }
+
+            .footer-wrapper {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        /* 底部灰色小區塊容器 */
+        .footer-wrapper {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 預設 4 欄 (b) */
+            gap: 10px;
+        }
+
+        .grey-box {
+            background-color: #e9ecef;
+            height: 40px;
+            border-radius: 5px;
+        }
+
+        /* --- 關鍵：響應式設定 --- */
+        /* 當寬度小於 480px 時切換到佈局 (a) */
+        @media (max-width: 480px) {
+            .content-wrapper {
+                flex-direction: column; /* 變為縱向排列 */
+            }
+
+            .footer-wrapper {
+                grid-template-columns: repeat(2, 1fr); /* 變為 2 欄 */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header"></div>
+
+        <div class="content-wrapper">
+            <div class="blue-box"></div>
+            <div class="blue-box"></div>
+            <div class="blue-box"></div>
+        </div>
+
+        <div class="footer-wrapper">
+            <div class="grey-box"></div>
+            <div class="grey-box"></div>
+            <div class="grey-box"></div>
+            <div class="grey-box"></div>
+        </div>
+    </div>
+
+</body>
+</html>
