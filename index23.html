@@ -1,90 +1,282 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+
+<html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <title>CSS Forms & Counters Exercise</title>
-    <style>
-        /* --- CSS Counters 部分 --- */
-        body {
-            /* 初始化計數器 'section' */
-            counter-reset: section; 
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Detail Viewer</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        h2::before {
-            /* 每次遇到 h2，計數器增加 1 */
-            counter-increment: section;
-            /* 顯示內容：Section 1:, Section 2: ... */
-            content: "Section " counter(section) ": ";
-        }
+:root {
+–bg: #f3f3f3;
+–header-bg: #f6f6f6;
+–list-border: #eaeaea;
+–list-select-bg: #e8f3ff;
+–list-select-border: #cfddff;
+–bottom-bg: #f3f3f3;
+–text-primary: #2f2f2f;
+–text-count: #0084ff;
+–text-preview: #707070;
+–btn-bg: #ffffff;
+–btn-border: #2f2f2f;
+–btn-radius: 8px;
+–btn-height: 22px;
+}
 
-        /* --- CSS Forms 部分 --- */
-        .container {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            max-width: 500px;
-            margin-top: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+body {
+font-family: ‘Noto Sans TC’, sans-serif;
+font-size: 13px;
+background: #e8e8e8;
+display: flex;
+justify-content: center;
+align-items: flex-start;
+min-height: 100vh;
+padding: 40px 16px;
+}
 
-        /* 根據投影片 Page 3-5 的規格 */
-        input[type=text], select, textarea {
-            width: 100%;             /* 寬度 100% */
-            padding: 12px 20px;      /* 內邊距 */
-            margin: 8px 0;           /* 外邊距 */
-            display: inline-block;
-            border: 1px solid #ccc;  /* 邊框樣式 */
-            border-radius: 4px;      /* 圓角 */
-            box-sizing: border-box;  /* 確保 padding 不影響寬度 */
-        }
+.card {
+background: #fff;
+border-radius: 4px;
+box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+width: 496px;
+overflow: hidden;
+}
 
-        /* 根據投影片 Page 10 的按鈕規格 */
-        input[type=submit] {
-            width: 100%;
-            background-color: #4CAF50; /* 綠色背景 */
-            color: white;
-            padding: 14px 20px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+/* ── Header ── */
+.header {
+background: var(–header-bg);
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0 12px;
+height: 35px;
+border-bottom: 1px solid var(–list-border);
+}
+.header-title {
+font-size: 13px;
+color: var(–text-primary);
+font-weight: 500;
+}
+.header-actions {
+display: flex;
+gap: 6px;
+align-items: center;
+}
+.badge {
+width: 20px; height: 20px;
+border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+font-size: 11px; font-weight: 700; color: #fff;
+}
+.badge-num  { background: #6c6c6c; }
+.badge-act  { background: #8b2cf5; }
 
-        input[type=submit]:hover {
-            background-color: #45a049; /* 滑鼠懸停效果 */
-        }
-    </style>
+/* ── Preview area ── */
+.preview-wrap {
+position: relative;
+width: 100%;
+background: #ddd;
+overflow: hidden;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.preview-wrap img {
+width: 100%;
+height: 240px;
+object-fit: cover;
+display: block;
+}
+.preview-label {
+position: absolute;
+inset: 0;
+display: flex; align-items: center; justify-content: center;
+color: rgba(255,255,255,0.85);
+font-size: 14px;
+pointer-events: none;
+}
+/* Thumbnail border hint */
+.thumbnail-border {
+position: absolute;
+bottom: 26px; right: 0;
+width: 160px; height: 100px;
+border: 1px dashed #e8a0a0;
+pointer-events: none;
+}
+
+/* ── View-info button ── */
+.btn-bar {
+display: flex;
+justify-content: flex-end;
+padding: 8px 18px 0 18px;
+}
+.btn-view {
+height: var(–btn-height);
+padding: 0 12px;
+border-radius: var(–btn-radius);
+border: 1px solid var(–btn-border);
+background: var(–btn-bg);
+font-family: ‘Noto Sans TC’, sans-serif;
+font-size: 13px;
+color: var(–text-primary);
+cursor: pointer;
+transition: background 0.15s, color 0.15s;
+white-space: nowrap;
+}
+.btn-view:hover { background: #f0f0f0; }
+.btn-view:active { background: #e4e4e4; }
+
+/* ── Detail panel ── */
+.detail-panel {
+overflow: hidden;
+max-height: 0;
+opacity: 0;
+transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease, padding 0.3s ease;
+padding: 0 18px;
+background: #fff;
+}
+.detail-panel.open {
+max-height: 400px;
+opacity: 1;
+padding: 14px 18px 18px;
+}
+
+.detail-row {
+display: flex;
+align-items: flex-start;
+padding: 5px 0;
+border-bottom: 1px solid var(–list-border);
+gap: 8px;
+color: var(–text-primary);
+font-size: 13px;
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-label {
+min-width: 80px;
+color: #888;
+font-size: 12px;
+padding-top: 1px;
+}
+.detail-value {
+color: var(–text-primary);
+word-break: break-all;
+}
+.detail-value a {
+color: #2563eb;
+text-decoration: underline;
+word-break: break-all;
+}
+
+/* ── Bottom bar ── */
+.bottom-bar {
+background: var(–bottom-bg);
+border-top: 1px solid var(–list-border);
+padding: 6px 12px;
+font-size: 13px;
+color: var(–text-primary);
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.count-num { color: var(–text-count); font-weight: 700; }
+
+/* scrollbar inside detail */
+.detail-panel { overflow-y: auto; }
+.detail-panel::-webkit-scrollbar { width: 4px; }
+.detail-panel::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+</style>
+
 </head>
 <body>
+<div class="card">
 
-    <h2>HTML Form Styling</h2>
-    
-    <div class="container">
-        <form action="#">
-            <label for="fname">First Name</label>
-            <input type="text" id="fname" name="firstname" placeholder="Your name..">
+  <!-- Header -->
 
-            <label for="lname">Last Name</label>
-            <input type="text" id="lname" name="lastname" placeholder="Your last name..">
-
-            <label for="country">Country</label>
-            <select id="country" name="country">
-                <option value="australia">Australia</option>
-                <option value="canada">Canada</option>
-                <option value="usa">USA</option>
-            </select>
-
-            <input type="submit" value="Submit">
-        </form>
+  <div class="header">
+    <span class="header-title">預覽</span>
+    <div class="header-actions">
+      <span class="badge badge-num">6</span>
+      <span class="badge badge-act">7</span>
     </div>
+  </div>
 
-    <h2>Automatic Counter Test</h2>
-    <p>這個標題會自動顯示為 Section 2，因為我們使用了 CSS Counters。</p>
+  <!-- Image preview -->
+
+  <div class="preview-wrap">
+    <!-- Using a placeholder landscape photo (boardwalk/lake scene matching the spec) -->
+    <img
+      src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=496&h=240&fit=crop"
+      alt="預覽圖片"
+      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+    />
+    <div class="preview-label" style="display:none; background:#c8c8c8;">
+      Default<br>459×240
+    </div>
+    <div class="thumbnail-border"></div>
+  </div>
+
+  <!-- Button bar -->
+
+  <div class="btn-bar">
+    <button class="btn-view" id="toggleBtn" onclick="toggleDetail()">查看資訊</button>
+  </div>
+
+  <!-- Detail panel (hidden by default) -->
+
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-row">
+      <span class="detail-label">拍攝日期</span>
+      <span class="detail-value">2017/10/12</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">檔案名稱</span>
+      <span class="detail-value">20171012_1.jpg</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">解析度</span>
+      <span class="detail-value">459.97KB</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">路徑</span>
+      <span class="detail-value">
+        <a href="#">\DesignCenter\snap.com\cn\DesignCenter\PM-RD 請看入WEB\Options\A_image\PDFu2\sample</a>
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">尺寸</span>
+      <span class="detail-value">496 × 240 px</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">格式</span>
+      <span class="detail-value">JPEG</span>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+
+  <div class="bottom-bar">
+    <span>數量：<span class="count-num">64</span>/100</span>
+  </div>
+
+</div>
+
+<script>
+  let open = false;
+  function toggleDetail() {
+    open = !open;
+    const panel = document.getElementById('detailPanel');
+    const btn   = document.getElementById('toggleBtn');
+    if (open) {
+      panel.classList.add('open');
+      btn.textContent = '收起資訊';
+    } else {
+      panel.classList.remove('open');
+      btn.textContent = '查看資訊';
+    }
+  }
+</script>
 
 </body>
 </html>
