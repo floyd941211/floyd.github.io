@@ -1,61 +1,90 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>Design Spec Button</title>
+    <title>CSS Forms & Counters Exercise</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+        /* --- CSS Counters 部分 --- */
+        body {
+            /* 初始化計數器 'section' */
+            counter-reset: section; 
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
 
-        /* 延用你提供的設計規範 */
-        .info-button {
-            height: 22px;
-            border-radius: 8px;
-            padding: 0 18px;
+        h2::before {
+            /* 每次遇到 h2，計數器增加 1 */
+            counter-increment: section;
+            /* 顯示內容：Section 1:, Section 2: ... */
+            content: "Section " counter(section) ": ";
+        }
+
+        /* --- CSS Forms 部分 --- */
+        .container {
             background-color: #ffffff;
-            border: 1px solid #2f2f2f;
-            font-family: 'Roboto', sans-serif;
-            font-size: 13px;
-            color: #2f2f2f;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* 根據投影片 Page 3-5 的規格 */
+        input[type=text], select, textarea {
+            width: 100%;             /* 寬度 100% */
+            padding: 12px 20px;      /* 內邊距 */
+            margin: 8px 0;           /* 外邊距 */
+            display: inline-block;
+            border: 1px solid #ccc;  /* 邊框樣式 */
+            border-radius: 4px;      /* 圓角 */
+            box-sizing: border-box;  /* 確保 padding 不影響寬度 */
+        }
+
+        /* 根據投影片 Page 10 的按鈕規格 */
+        input[type=submit] {
+            width: 100%;
+            background-color: #4CAF50; /* 綠色背景 */
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
-            box-sizing: border-box;
-            transition: all 0.2s;
-            outline: none;
+            font-size: 16px;
         }
 
-        .info-button:hover {
-            background-color: #f0f0f0;
-        }
-
-        /* 點擊時的視覺回饋 */
-        .info-button:active {
-            background-color: #e0e0e0;
+        input[type=submit]:hover {
+            background-color: #45a049; /* 滑鼠懸停效果 */
         }
     </style>
 </head>
 <body>
 
-    <button id="toggleBtn" class="info-button" onclick="handleToggle()">查看資訊</button>
+    <h2>HTML Form Styling</h2>
+    
+    <div class="container">
+        <form action="#">
+            <label for="fname">First Name</label>
+            <input type="text" id="fname" name="firstname" placeholder="Your name..">
 
-    <script>
-        function handleToggle() {
-            // 1. 抓到按鈕這個元素
-            const btn = document.getElementById('toggleBtn');
-            
-            // 2. 判斷目前的文字內容
-            if (btn.innerText === "查看資訊") {
-                // 如果是查看資訊，就換成收起
-                btn.innerText = "收起資訊";
-                console.log("狀態：已展開");
-            } else {
-                // 否則就換回查看資訊
-                btn.innerText = "查看資訊";
-                console.log("狀態：已收起");
-            }
-        }
-    </script>
+            <label for="lname">Last Name</label>
+            <input type="text" id="lname" name="lastname" placeholder="Your last name..">
+
+            <label for="country">Country</label>
+            <select id="country" name="country">
+                <option value="australia">Australia</option>
+                <option value="canada">Canada</option>
+                <option value="usa">USA</option>
+            </select>
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
+    <h2>Automatic Counter Test</h2>
+    <p>這個標題會自動顯示為 Section 2，因為我們使用了 CSS Counters。</p>
 
 </body>
 </html>
