@@ -134,13 +134,38 @@ overflow: hidden;
 max-height: 0;
 opacity: 0;
 transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease, padding 0.3s ease;
-padding: 0 18px;
+padding: 0 0 0 18px;
 background: #fff;
 }
 .detail-panel.open {
-max-height: 400px;
+max-height: 200px;
 opacity: 1;
-padding: 14px 18px 18px;
+padding: 0 0 0 18px;
+}
+
+/* 內部可捲動容器 */
+.detail-scroll {
+height: 160px;
+overflow-y: scroll;
+padding: 14px 12px 14px 0;
+/* 強制顯示捲軸 */
+scrollbar-width: thin;          /* Firefox */
+scrollbar-color: #b0b0b0 #f0f0f0;
+}
+/* Chrome / Safari 捲軸樣式 */
+.detail-scroll::-webkit-scrollbar {
+width: 8px;
+}
+.detail-scroll::-webkit-scrollbar-track {
+background: #f0f0f0;
+border-radius: 4px;
+}
+.detail-scroll::-webkit-scrollbar-thumb {
+background: #b0b0b0;
+border-radius: 4px;
+}
+.detail-scroll::-webkit-scrollbar-thumb:hover {
+background: #888;
 }
 
 .detail-row {
@@ -182,12 +207,7 @@ align-items: center;
 }
 .count-num { color: var(–text-count); font-weight: 700; }
 
-/* scrollbar inside detail */
-.detail-panel { overflow-y: auto; }
-.detail-panel::-webkit-scrollbar { width: 4px; }
-.detail-panel::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
 </style>
-
 </head>
 <body>
 <div class="card">
@@ -226,31 +246,45 @@ align-items: center;
   <!-- Detail panel (hidden by default) -->
 
   <div class="detail-panel" id="detailPanel">
-    <div class="detail-row">
-      <span class="detail-label">拍攝日期</span>
-      <span class="detail-value">2017/10/12</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">檔案名稱</span>
-      <span class="detail-value">20171012_1.jpg</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">解析度</span>
-      <span class="detail-value">459.97KB</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">路徑</span>
-      <span class="detail-value">
-        <a href="#">\DesignCenter\snap.com\cn\DesignCenter\PM-RD 請看入WEB\Options\A_image\PDFu2\sample</a>
-      </span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">尺寸</span>
-      <span class="detail-value">496 × 240 px</span>
-    </div>
-    <div class="detail-row">
-      <span class="detail-label">格式</span>
-      <span class="detail-value">JPEG</span>
+    <div class="detail-scroll">
+      <div class="detail-row">
+        <span class="detail-label">拍攝日期</span>
+        <span class="detail-value">2017/10/12</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">檔案名稱</span>
+        <span class="detail-value">20171012_1.jpg</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">解析度</span>
+        <span class="detail-value">459.97KB</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">路徑</span>
+        <span class="detail-value">
+          <a href="#">\DesignCenter\snap.com\cn\DesignCenter\PM-RD 請看入WEB\Options\A_image\PDFu2\sample</a>
+        </span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">尺寸</span>
+        <span class="detail-value">496 × 240 px</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">格式</span>
+        <span class="detail-value">JPEG</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">相機</span>
+        <span class="detail-value">Canon EOS 5D Mark IV</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">ISO</span>
+        <span class="detail-value">100</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">快門速度</span>
+        <span class="detail-value">1/250s</span>
+      </div>
     </div>
   </div>
 
