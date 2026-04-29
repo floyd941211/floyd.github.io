@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouse Event Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        button {
+            font-size: 20px;
+            padding: 12px 30px;
+            cursor: pointer;
+        }
+
+        #text {
+            font-size: 32px;
+            margin-bottom: 20px;
+            transition: color 0.2s;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="text">Hello</div>
+    <button id="myButton">Button</button>
+
+    <script>
+        const textDiv = document.getElementById("text");
+        const button = document.getElementById("myButton");
+
+        // 滑鼠移到按鈕上
+        button.addEventListener("mouseover", function () {
+            textDiv.textContent = "Mouse over button";
+            textDiv.style.color = "blue";
+        });
+
+        // 滑鼠移出按鈕
+        button.addEventListener("mouseout", function () {
+            textDiv.textContent = "Hello";
+            textDiv.style.color = ""; // 恢復預設顏色
+        });
+
+        // 點擊按鈕
+        button.addEventListener("click", function () {
+            textDiv.textContent = "Mouse click button";
+            textDiv.style.color = "red";
+        });
+    </script>
+
+</body>
+</html>
