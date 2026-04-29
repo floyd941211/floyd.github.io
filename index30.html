@@ -33,22 +33,27 @@
         const textDiv = document.getElementById("text");
         const button = document.getElementById("myButton");
 
+        let isClicked = false; // 追蹤是否已點擊過
+
         // 滑鼠移到按鈕上
         button.addEventListener("mouseover", function () {
+            if (isClicked) return; // 已點擊過就不改變
             textDiv.textContent = "Mouse over button";
-            textDiv.style.color = "blue";
+            textDiv.style.color = "pink";
         });
 
         // 滑鼠移出按鈕
         button.addEventListener("mouseout", function () {
+            if (isClicked) return; // 已點擊過就不改變
             textDiv.textContent = "Hello";
             textDiv.style.color = ""; // 恢復預設顏色
         });
 
-        // 點擊按鈕
+        // 點擊按鈕 — 永久改變
         button.addEventListener("click", function () {
+            isClicked = true;
             textDiv.textContent = "Mouse click button";
-            textDiv.style.color = "red";
+            textDiv.style.color = "pink";
         });
     </script>
 
