@@ -1,0 +1,524 @@
+好的，這是您提供的「Carbon Life」碳足跡模擬器網頁，已移除大部分視覺特效，只保留陽春的結構與功能。
+```html
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Carbon Life · 24H 碳足跡模擬器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f5f5;
+      color: #1e1e1e;
+      font-family: system-ui, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif;
+      line-height: 1.5;
+      padding: 1rem;
+      margin: 0 auto;
+      max-width: 800px;
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #aaa;
+      padding-bottom: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+    .header-stats {
+      display: flex;
+      gap: 2rem;
+    }
+    .hstat {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .hstat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #555;
+    }
+    .hstat-value {
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    .progress-wrap {
+      width: 100%;
+      height: 4px;
+      background: #ccc;
+      margin-top: 0.5rem;
+    }
+    .progress-fill {
+      height: 4px;
+      background: #2c7a4d;
+      width: 0%;
+    }
+    button {
+      background: #e0e0e0;
+      border: 1px solid #888;
+      padding: 0.6rem 1.8rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    button:hover {
+      background: #ccc;
+    }
+    .start-btn {
+      background: #2c7a4d;
+      color: white;
+      border-color: #1f5c38;
+      font-size: 1rem;
+      padding: 0.8rem 2.2rem;
+    }
+    .hero {
+      text-align: center;
+      padding: 2rem 0;
+    }
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 800;
+      margin: 0.5rem 0;
+    }
+    .hero-sub {
+      max-width: 500px;
+      margin: 1rem auto 2rem;
+      color: #333;
+    }
+    .quiz-section {
+      display: none;
+    }
+    .q-card {
+      background: white;
+      border: 1px solid #ccc;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: 6px;
+    }
+    .q-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.8rem;
+      color: #444;
+    }
+    .q-num {
+      background: #eaeaea;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .q-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .q-desc {
+      font-size: 0.9rem;
+      color: #444;
+      margin-bottom: 1.2rem;
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+    }
+    .opt-btn {
+      background: #fafafa;
+      border: 1px solid #ccc;
+      text-align: left;
+      padding: 0.9rem;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      cursor: pointer;
+      background: white;
+    }
+    .opt-btn.selected {
+      border: 2px solid #2c7a4d;
+      background: #f0f7f0;
+    }
+    .opt-icon {
+      font-size: 1.4rem;
+    }
+    .opt-label {
+      font-weight: 700;
+    }
+    .opt-carbon {
+      font-size: 0.8rem;
+      color: #2c7a4d;
+      font-weight: 600;
+    }
+    .opt-src {
+      font-size: 0.7rem;
+      color: #666;
+      border-top: 1px dashed #ddd;
+      margin-top: 0.25rem;
+      padding-top: 0.3rem;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      background: #ddd;
+      margin-left: 0.5rem;
+    }
+    .badge-low { background: #c8e6c9; color: #1b4d1f; }
+    .badge-mid { background: #fff3cd; color: #856404; }
+    .badge-high { background: #f8d7da; color: #721c24; }
+    .source-tag {
+      font-size: 0.7rem;
+      color: #2c7a4d;
+      margin-left: auto;
+      border: 1px solid #bcd9c6;
+      padding: 0.1rem 0.5rem;
+      border-radius: 4px;
+      background: #f4fbf6;
+    }
+    .result-section {
+      display: none;
+    }
+    .result-header {
+      border-bottom: 2px solid #aaa;
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+    .result-score {
+      font-size: 4rem;
+      font-weight: 800;
+    }
+    .compare-grid, .breakdown-grid {
+      margin: 1.2rem 0 2rem;
+    }
+    .compare-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+    }
+    .compare-label {
+      width: 100px;
+      font-weight: 600;
+    }
+    .compare-bar-wrap {
+      flex: 1;
+      height: 20px;
+      background: #e0e0e0;
+      border: 1px solid #aaa;
+    }
+    .compare-bar-fill {
+      height: 100%;
+      background: #2c7a4d;
+      width: 0%;
+    }
+    .compare-value {
+      min-width: 70px;
+      text-align: right;
+    }
+    .breakdown-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+    .breakdown-item {
+      background: white;
+      border: 1px solid #ccc;
+      padding: 1rem;
+      border-radius: 4px;
+    }
+    .data-source-box {
+      background: #f0f0f0;
+      border-left: 4px solid #2c7a4d;
+      padding: 1rem;
+      margin: 2rem 0;
+      font-size: 0.8rem;
+    }
+    .restart-btn {
+      background: #444;
+      color: white;
+      margin-top: 1rem;
+    }
+    @media (max-width: 500px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo">◈ Carbon Life</div>
+  <div class="header-stats">
+    <div class="hstat">
+      <span class="hstat-label">累積排放</span>
+      <span class="hstat-value" id="h-carbon">—</span>
+    </div>
+    <div class="hstat">
+      <span class="hstat-label">進度</span>
+      <span class="hstat-value" id="h-progress">0/10</span>
+    </div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+</header>
+
+<!-- 首頁 -->
+<section class="hero" id="hero-section">
+  <div style="font-size:0.8rem; text-transform:uppercase; color:#2c7a4d;">24小時碳足跡模擬</div>
+  <h1 class="hero-title">CARBON LIFE</h1>
+  <p class="hero-sub">每個日常選擇都在影響地球。追蹤你24小時的碳足跡，與全球數據對比。</p>
+  <button class="start-btn" onclick="startQuiz()">開始模擬</button>
+</section>
+
+<!-- 測驗區 -->
+<section class="quiz-section" id="quiz-section"></section>
+
+<!-- 結果區 -->
+<section class="result-section" id="result-section">
+  <div class="result-header">
+    <div style="color:#2c7a4d; font-weight:600;">你的24H碳足跡報告</div>
+    <div>
+      <span class="result-score" id="r-score">0.00</span> <span style="font-size:1.2rem;">kg CO₂e / 日</span>
+    </div>
+    <div style="font-size:1.5rem; font-weight:700; margin-top:0.5rem;" id="r-verdict"></div>
+    <p id="r-desc" style="color:#333;"></p>
+  </div>
+
+  <h3 style="margin:1.5rem 0 0.5rem;">與全球基準比較</h3>
+  <div class="compare-grid" id="compare-grid"></div>
+
+  <h3 style="margin:1.5rem 0 0.5rem;">排放來源分解</h3>
+  <div class="breakdown-grid" id="breakdown-grid"></div>
+
+  <div class="data-source-box">
+    <strong>數據來源</strong><br>
+    環境部碳足跡係數資料庫(CFP_P_02)、經濟部能源署112年電力係數0.494 kgCO₂/度、交通部運具調查、桃園市低碳活動指引等。
+  </div>
+  <button class="restart-btn" onclick="location.reload()">↺ 重新模擬</button>
+</section>
+
+<script>
+  (function() {
+    // 係數與題目 (沿用原始資料，精簡化)
+    const questions = [
+      { id:1, category:"交通", icon:"🚗", title:"早晨通勤：主要交通工具？", desc:"交通佔台灣溫室氣體約13%。通勤10公里為基準。",
+        options:[
+          { label:"步行/腳踏車", icon:"🚲", kg:0.0, badge:"low", note:"0.00 kg", src:"零排放" },
+          { label:"捷運/公車", icon:"🚇", kg:0.40, badge:"low", note:"0.40 kg", src:"捷運0.04/人公里×10km" },
+          { label:"機車(燃油)", icon:"🛵", kg:0.68, badge:"mid", note:"0.68 kg", src:"機車0.068/km" },
+          { label:"獨自開車", icon:"🚗", kg:1.73, badge:"high", note:"1.73 kg", src:"汽車0.173/人公里" }
+        ]},
+      { id:2, category:"飲食", icon:"🍳", title:"早餐選擇？", desc:"食物碳排差異巨大。",
+        options:[
+          { label:"燕麥/水果", icon:"🥣", kg:0.10, badge:"low", note:"0.10 kg", src:"穀物低係數" },
+          { label:"蛋餅/早餐店", icon:"🥚", kg:0.35, badge:"low", note:"0.35 kg", src:"雞蛋+澱粉" },
+          { label:"速食漢堡", icon:"🍔", kg:1.10, badge:"mid", note:"1.10 kg", src:"牛肉+包材" },
+          { label:"外送培根蛋", icon:"🥓", kg:1.10, badge:"mid", note:"1.10 kg", src:"豬肉+外送" }
+        ]},
+      { id:3, category:"辦公", icon:"💻", title:"工作模式？", desc:"用電碳排=度數×0.494 kgCO₂/度。",
+        options:[
+          { label:"在家遠端", icon:"🏠", kg:0.30, badge:"low", note:"0.30 kg", src:"電腦+照明" },
+          { label:"共享空間", icon:"🏢", kg:0.55, badge:"low", note:"0.55 kg", src:"分攤冷氣" },
+          { label:"辦公室冷氣", icon:"❄️", kg:0.90, badge:"mid", note:"0.90 kg", src:"冷氣8hr" },
+          { label:"長途出差(飛機)", icon:"✈️", kg:4.50, badge:"high", note:"4.50 kg", src:"航空係數" }
+        ]},
+      { id:4, category:"午餐", icon:"🍱", title:"午餐怎麼吃？", desc:"蔬食便當約1.0 kg，葷食平均3.25 kg。",
+        options:[
+          { label:"素食便當", icon:"🥗", kg:1.00, badge:"low", note:"1.00 kg", src:"蔬食係數" },
+          { label:"雞肉/豬肉", icon:"🍗", kg:2.00, badge:"mid", note:"2.00 kg", src:"禽畜低側" },
+          { label:"牛肉麵/漢堡", icon:"🍜", kg:3.25, badge:"high", note:"3.25 kg", src:"葷食均值" },
+          { label:"進口牛排", icon:"🥩", kg:5.00, badge:"high", note:"5.00 kg", src:"牛肉+空運" }
+        ]},
+      { id:5, category:"消費", icon:"🛍️", title:"今天購物了嗎？", desc:"聚酯纖維4.45 kg/kg，手機生產~70kg。",
+        options:[
+          { label:"沒有購物", icon:"🙅", kg:0.00, badge:"low", note:"0.00 kg", src:"零消費" },
+          { label:"二手衣物", icon:"♻️", kg:0.10, badge:"low", note:"0.10 kg", src:"僅物流" },
+          { label:"快時尚一件", icon:"👕", kg:1.60, badge:"mid", note:"1.60 kg", src:"聚酯+包材" },
+          { label:"新手機(日均攤)", icon:"📱", kg:8.00, badge:"high", note:"8.00 kg", src:"生產70kg/2年" }
+        ]},
+      { id:6, category:"家電", icon:"🌡️", title:"空調使用習慣？", desc:"冷氣溫度每調高1°C省電6%。",
+        options:[
+          { label:"不開冷氣/電扇", icon:"🍃", kg:0.06, badge:"low", note:"0.06 kg", src:"電扇低耗電" },
+          { label:"26°C+電扇", icon:"🌀", kg:0.42, badge:"low", note:"0.42 kg", src:"節電模式" },
+          { label:"22°C全日", icon:"💨", kg:2.77, badge:"mid", note:"2.77 kg", src:"冷氣8hr均攤" },
+          { label:"18°C強冷", icon:"🥶", kg:4.20, badge:"high", note:"4.20 kg", src:"極冷高負載" }
+        ]},
+      { id:7, category:"飲料", icon:"🧃", title:"飲水與飲料？", desc:"寶特瓶水0.15 kg/瓶。",
+        options:[
+          { label:"自帶水壺", icon:"🫙", kg:0.01, badge:"low", note:"0.01 kg", src:"自來水" },
+          { label:"台灣茶/咖啡", icon:"🍵", kg:0.15, badge:"low", note:"0.15 kg", src:"在地飲品" },
+          { label:"瓶裝水+手搖飲", icon:"🧋", kg:0.60, badge:"mid", note:"0.60 kg", src:"2瓶+杯" },
+          { label:"進口氣泡水+咖啡", icon:"☕", kg:1.00, badge:"high", note:"1.00 kg", src:"進口包材" }
+        ]},
+      { id:8, category:"娛樂", icon:"📺", title:"晚間娛樂？", desc:"PC遊戲約300W，電視100W。",
+        options:[
+          { label:"閱讀/散步", icon:"📖", kg:0.02, badge:"low", note:"0.02 kg", src:"低用電" },
+          { label:"串流追劇2h", icon:"📺", kg:0.10, badge:"low", note:"0.10 kg", src:"電視+路由器" },
+          { label:"PC遊戲", icon:"🎮", kg:0.44, badge:"mid", note:"0.44 kg", src:"300W×3h" },
+          { label:"演唱會", icon:"🎸", kg:1.20, badge:"high", note:"1.20 kg", src:"場館+交通" }
+        ]},
+      { id:9, category:"晚餐", icon:"🍽️", title:"晚餐選擇？", desc:"蔬食1.0 kg，葷食3.25 kg。",
+        options:[
+          { label:"自煮蔬食", icon:"🥦", kg:0.80, badge:"low", note:"0.80 kg", src:"蔬菜低係數" },
+          { label:"家常雞魚", icon:"🐟", kg:1.50, badge:"low", note:"1.50 kg", src:"禽魚中等" },
+          { label:"熱炒豬肉", icon:"🍛", kg:3.25, badge:"high", note:"3.25 kg", src:"葷食均值" },
+          { label:"燒烤火鍋", icon:"🔥", kg:4.50, badge:"high", note:"4.50 kg", src:"肉類多+浪費" }
+        ]},
+      { id:10, category:"旅遊", icon:"✈️", title:"本月旅遊計畫？", desc:"火車0.06、高鐵0.032 kg/人公里。均攤至每日。",
+        options:[
+          { label:"不旅遊", icon:"🏡", kg:0.00, badge:"low", note:"0.00 kg", src:"無排放" },
+          { label:"台鐵島內", icon:"🚆", kg:0.60, badge:"low", note:"0.60 kg", src:"300km÷30天" },
+          { label:"日本來回", icon:"🛫", kg:3.00, badge:"mid", note:"3.00 kg", src:"航空均攤" },
+          { label:"歐美長途", icon:"🌏", kg:7.00, badge:"high", note:"7.00 kg", src:"長程均攤" }
+        ]}
+    ];
+
+    const answers = {};
+    const MAX_KG = 25;
+
+    function updateUI() {
+      const total = Object.values(answers).reduce((sum, a) => sum + a.kg, 0);
+      const answered = Object.keys(answers).length;
+      document.getElementById('h-carbon').textContent = total.toFixed(2) + ' kg';
+      document.getElementById('h-progress').textContent = `${answered}/${questions.length}`;
+      document.getElementById('progress-fill').style.width = `${(answered/questions.length)*100}%`;
+    }
+
+    function buildQuiz() {
+      const section = document.getElementById('quiz-section');
+      section.innerHTML = '';
+      questions.forEach((q) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `qcard-${q.id}`;
+        card.innerHTML = `
+          <div class="q-meta">
+            <span class="q-num">Q${q.id}</span>
+            <span>${q.icon} ${q.category}</span>
+            <span class="source-tag">官方係數</span>
+          </div>
+          <div class="q-title">${q.title}</div>
+          <div class="q-desc">${q.desc}</div>
+          <div class="options-grid">
+            ${q.options.map(opt => `
+              <button class="opt-btn" data-qid="${q.id}" data-kg="${opt.kg}" data-icon="${opt.icon}" data-cat="${q.category}">
+                <span class="badge ${opt.badge==='low'?'badge-low':opt.badge==='mid'?'badge-mid':'badge-high'}">${opt.badge==='low'?'低碳':opt.badge==='mid'?'中碳':'高碳'}</span>
+                <span class="opt-icon">${opt.icon}</span>
+                <span class="opt-label">${opt.label}</span>
+                <span class="opt-carbon">${opt.note}</span>
+                <span class="opt-src">📋 ${opt.src}</span>
+              </button>
+            `).join('')}
+          </div>
+        `;
+        section.appendChild(card);
+      });
+
+      // 事件監聽
+      document.querySelectorAll('.opt-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          const qId = parseInt(this.dataset.qid);
+          const kg = parseFloat(this.dataset.kg);
+          const icon = this.dataset.icon;
+          const category = this.dataset.cat;
+          const card = document.getElementById(`qcard-${qId}`);
+          
+          card.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+          this.classList.add('selected');
+          answers[qId] = { kg, icon, category };
+          updateUI();
+          
+          if (Object.keys(answers).length === questions.length) {
+            setTimeout(showResult, 300);
+          }
+        });
+      });
+    }
+
+    function startQuiz() {
+      document.getElementById('hero-section').style.display = 'none';
+      document.getElementById('quiz-section').style.display = 'block';
+      buildQuiz();
+      window.scrollTo(0,0);
+    }
+
+    function showResult() {
+      document.getElementById('quiz-section').style.display = 'none';
+      const resultSec = document.getElementById('result-section');
+      resultSec.style.display = 'block';
+      
+      const total = Object.values(answers).reduce((s,a) => s + a.kg, 0);
+      document.getElementById('r-score').textContent = total.toFixed(2);
+      
+      let verdict, desc;
+      if (total < 5) { verdict = "🍀 低碳楷模"; desc = "遠低於台灣平均，維持好習慣。"; }
+      else if (total < 12) { verdict = "🌍 接近平均"; desc = "接近台灣人均水準，微調即可改善。"; }
+      else if (total < 20) { verdict = "🌋 超出警戒"; desc = "飲食與交通碳排偏高。"; }
+      else { verdict = "🔥 極高碳排放"; desc = "需從高碳選項開始改變。"; }
+      
+      document.getElementById('r-verdict').textContent = verdict;
+      document.getElementById('r-desc').textContent = desc;
+
+      // 比較圖
+      const benchmarks = [
+        { label:'你今天', kg:total, cls:'you' },
+        { label:'台灣平均', kg:14.0, cls:'tw' },
+        { label:'全球平均', kg:11.5, cls:'global' },
+        { label:'巴黎目標', kg:3.0, cls:'paris' }
+      ];
+      const maxKg = Math.max(...benchmarks.map(b=>b.kg), 1);
+      const compareGrid = document.getElementById('compare-grid');
+      compareGrid.innerHTML = benchmarks.map(b => `
+        <div class="compare-row">
+          <span class="compare-label">${b.label}</span>
+          <div class="compare-bar-wrap"><div class="compare-bar-fill" style="width:${(b.kg/maxKg)*100}%; background:${b.cls==='you'?'#2c7a4d':b.cls==='tw'?'#e6b422':b.cls==='global'?'#d97706':'#3b82f6'};"></div></div>
+          <span class="compare-value">${b.kg.toFixed(1)} kg</span>
+        </div>
+      `).join('');
+
+      // 分類 breakdown
+      const catMap = {};
+      Object.values(answers).forEach(a => {
+        catMap[a.category] = (catMap[a.category] || 0) + a.kg;
+      });
+      const breakdownGrid = document.getElementById('breakdown-grid');
+      breakdownGrid.innerHTML = Object.entries(catMap).sort((a,b)=>b[1]-a[1]).map(([cat,kg]) => {
+        const q = questions.find(q=>q.category===cat);
+        return `<div class="breakdown-item"><span>${q?.icon||'📦'}</span> <strong>${cat}</strong><br>${kg.toFixed(2)} kg</div>`;
+      }).join('');
+      
+      window.scrollTo(0,0);
+    }
+
+    // 綁定開始按鈕
+    document.querySelector('.start-btn').addEventListener('click', startQuiz);
+    window.startQuiz = startQuiz; // 兼容onclick
+  })();
+</script>
+</body>
+</html>
+```
