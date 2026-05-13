@@ -1,1 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Object Properties Demo</title>
+</head>
+<body>
 
+<h2>Object Properties</h2>
+<p id="before"></p>
+<p id="delete-msg"></p>
+<p id="after"></p>
+
+<script>
+  var Person = {
+    firstName : "Tony",
+    lastName  : "Lee",
+    age       : 50,
+    eyeColor  : "Blue"
+  };
+
+  // List all properties
+  var text = "All properties:<br>";
+  for (var key in Person) {
+    text += key + " : " + Person[key] + "<br>";
+  }
+  document.getElementById("before").innerHTML = text;
+
+  // Delete age
+  delete Person.age;
+  document.getElementById("delete-msg").innerHTML = "--- age property deleted ---";
+
+  // Print object after delete
+  var text2 = "After deleting age:<br>";
+  for (var key in Person) {
+    text2 += key + " : " + Person[key] + "<br>";
+  }
+  document.getElementById("after").innerHTML = text2;
+</script>
+
+</body>
+</html>
